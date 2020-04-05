@@ -53,7 +53,7 @@ public class BatchConfiguration {
 	private PagingQueryProvider createQueryProvider() {
 		H2PagingQueryProvider queryProvider = new H2PagingQueryProvider();
 
-		queryProvider.setSelectClause("SELECT person_id, first_name,last_name");
+		queryProvider.setSelectClause("SELECT id, first_name, last_name");
 		queryProvider.setFromClause("FROM people");
 		queryProvider.setSortKeys(sortByApellidoAsc());
 
@@ -75,7 +75,10 @@ public class BatchConfiguration {
 	public JdbcBatchItemWriter<Person> writer(DataSource dataSource) {
 		return new JdbcBatchItemWriterBuilder<Person>()
 				.itemSqlParameterSourceProvider(new BeanPropertyItemSqlParameterSourceProvider<>())
-				.sql("INSERT INTO people (first_name, last_name) VALUES (:firstName, :lastName)").dataSource(dataSource)
+				.sql("UPDATE people "
+						+ "set first_name = :firstName, "
+						+ "last_name = :lastName "
+						+ "where id = :id").dataSource(dataSource)
 				.build();
 	}
 
