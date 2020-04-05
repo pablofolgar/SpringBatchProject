@@ -1,0 +1,1 @@
+INSERT INTO people (person_id, first_name, last_name) VALUES (1L, 'juan ignacio',  'folgar');
