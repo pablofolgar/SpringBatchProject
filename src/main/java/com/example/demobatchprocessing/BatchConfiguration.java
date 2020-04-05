@@ -34,8 +34,6 @@ public class BatchConfiguration {
 	@Autowired
 	public StepBuilderFactory stepBuilderFactory;
 
-	@Autowired
-	private DataSource dataSource;
 
 	@Bean
 	ItemReader<Person> reader(DataSource dataSource) {
@@ -83,13 +81,23 @@ public class BatchConfiguration {
 
 	@Bean
 	public Job importUserJob(JobCompletionNotificationListener listener, Step step1) {
-		return jobBuilderFactory.get("importUserJob").incrementer(new RunIdIncrementer()).listener(listener).flow(step1)
-				.end().build();
+		return jobBuilderFactory
+				.get("importUserJob")
+				.incrementer(new RunIdIncrementer())
+				.listener(listener)
+				.flow(step1)
+				.end()
+				.build();
 	}
 
 	@Bean
-	public Step step1(JdbcBatchItemWriter<Person> writer) {
-		return stepBuilderFactory.get("step1").<Person, Person>chunk(10).reader(reader(dataSource))
-				.processor(processor()).writer(writer).build();
+	public Step step1(JdbcBatchItemWriter<Person> writer,ItemReader<Person> reader) {
+		return stepBuilderFactory
+				.get("step1")
+				.<Person, Person>chunk(10)
+				.reader(reader)
+				.processor(processor())
+				.writer(writer)
+				.build();
 	}
 }
